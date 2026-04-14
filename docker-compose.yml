@@ -1,9 +1,9 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  # PostgreSQL Database
+  # PostgreSQL Database (v16 - Latest Stable)
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: edusaas-postgres
     environment:
       POSTGRES_USER: postgres
@@ -14,12 +14,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d edusaas"]
       interval: 10s
       timeout: 5s
       retries: 5
+    shm_size: 256mb
 
-  # Redis Cache
+  # Redis Cache (v7 - Latest Stable)
   redis:
     image: redis:7-alpine
     container_name: edusaas-redis
@@ -27,6 +28,7 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -41,15 +43,15 @@ services:
     container_name: edusaas-backend
     environment:
       NODE_ENV: development
-      PORT: 3000
+      PORT: 3001
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/edusaas
       REDIS_URL: redis://redis:6379
       JWT_SECRET: edusaas-jwt-secret-change-in-production
       JWT_EXPIRES_IN: 15m
       JWT_REFRESH_SECRET: edusaas-refresh-secret-change-in-production
-      FRONTEND_URL: http://localhost:3001
+      FRONTEND_URL: http://localhost:3000
     ports:
-      - "3000:3000"
+      - "3001:3001"
     depends_on:
       postgres:
         condition: service_healthy
@@ -59,6 +61,7 @@ services:
       - ./backend/src:/app/src
       - /app/node_modules
     command: npm run start:dev
+    restart: unless-stopped
 
   # Frontend (Next.js)
   frontend:
@@ -67,10 +70,11 @@ services:
       dockerfile: Dockerfile
     container_name: edusaas-frontend
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3000/api/v1
+      NEXT_PUBLIC_API_URL: http://localhost:3001/api/v1
       NEXT_PUBLIC_WS_URL: ws://localhost:3001
+      NODE_OPTIONS: '--turbo'
     ports:
-      - "3001:3001"
+      - "3000:3000"
     depends_on:
       - backend
     volumes:
@@ -78,15 +82,17 @@ services:
       - /app/node_modules
       - /app/.next
     command: npm run dev
+    restart: unless-stopped
 
-  # Elasticsearch (Optional - for search)
+  # Elasticsearch (v8 - Latest for Search)
   elasticsearch:
-    image: elasticsearch:8.11.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0
     container_name: edusaas-elasticsearch
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ingest.geoip.downloader.enabled=false
     ports:
       - "9200:9200"
     volumes:
@@ -96,14 +102,16 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    mem_limit: 1g
 
-  # PgAdmin (Database Management - Optional)
+  # PgAdmin (Database Management)
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4:8.10
     container_name: edusaas-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@edusaas.com
       PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: "False"
     ports:
       - "5050:80"
     volumes:
@@ -111,7 +119,7 @@ services:
     depends_on:
       - postgres
 
-  # Redis Commander (Redis Management - Optional)
+  # Redis Commander (Redis Management)
   redis-commander:
     image: rediscommander/redis-commander:latest
     container_name: edusaas-redis-commander
@@ -131,3 +139,4 @@ volumes:
 networks:
   default:
     name: edusaas-network
+    driver: bridge
