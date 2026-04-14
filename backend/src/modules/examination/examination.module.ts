@@ -1,19 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExaminationService } from './services/examination.service';
+import { GradingService } from './services/grading.service';
 import { ExaminationController } from './controllers/examination.controller';
-
-// Placeholder entities - full implementation would include:
-// - Exam schedules, venues, seating plans
-// - Invigilator assignments
-// - Grade entry and moderation
-// - Result processing and publication
-// - Transcript generation
+import { GradingController } from './controllers/grading.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([])],
-  controllers: [ExaminationController],
-  providers: [ExaminationService],
-  exports: [ExaminationService],
+  controllers: [ExaminationController, GradingController],
+  providers: [ExaminationService, GradingService],
+  exports: [ExaminationService, GradingService],
 })
 export class ExaminationModule {}
