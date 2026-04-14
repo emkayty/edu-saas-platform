@@ -7,11 +7,11 @@ import {
   AiGradedAssignment, PlagiarismReport, QuestionBankItem,
   SemanticSearchIndex, EnrollmentForecast, AnomalyAlert, SentimentAnalysis,
   ChatbotType, ChatStatus
-} from './entities/ai.entity';
+} from '../entities/ai.entity';
 import { 
   StartConversationDto, SendMessageDto, CreateRagDocumentDto, GetInsightsDto,
   CreateLearningPathDto, GradeAssignmentDto, CheckPlagiarismDto, AnalyzeSentimentDto
-} from './dto/ai.dto';
+} from '../dto/ai.dto';
 
 @Injectable()
 export class AiService {

@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { StaffProfile, LeaveApplication, PayrollRecord, StaffAttendance, EmploymentType, StaffStatus, LeaveStatus } from './entities/hr.entity';
+import { StaffProfile, LeaveApplication, PayrollRecord, StaffAttendance, EmploymentType, StaffStatus, LeaveStatus } from '../entities/hr.entity';
 import { 
   CreateStaffProfileDto, UpdateStaffProfileDto,
   CreateLeaveApplicationDto, UpdateLeaveApplicationDto,
   ProcessPayrollDto
-} from './dto/hr.dto';
+} from '../dto/hr.dto';
 
 @Injectable()
 export class HrService {

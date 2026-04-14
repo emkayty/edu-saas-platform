@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, ILike } from 'typeorm';
-import { LibraryBook, BookCopy, BorrowingRecord, BookReservation, BookRequest, LibraryHours, BookStatus, MaterialType } from './entities/library.entity';
+import { LibraryBook, BookCopy, BorrowingRecord, BookReservation, BookRequest, LibraryHours, BookStatus, MaterialType } from '../entities/library.entity';
 import { 
   CreateBookDto, UpdateBookDto, 
   SearchBookQueryDto,
   CreateBorrowingDto, 
   CreateReservationDto,
   UpdateHoursDto
-} from './dto/library.dto';
+} from '../dto/library.dto';
 
 @Injectable()
 export class LibraryService {

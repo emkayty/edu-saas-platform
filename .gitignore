@@ -40,3 +40,8 @@ kubeconfig
 # Misc
 *.tgz
 .cache/
+# Environment files
+.env
+.env.local
+.env.*.local
+

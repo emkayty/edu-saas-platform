@@ -1,15 +1,15 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Req, Get, Post, Patch, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { AiService } from './services/ai.service';
+import { AiService } from '../services/ai.service';
 import { 
   StartConversationDto, SendMessageDto, CreateRagDocumentDto, GetInsightsDto, ChatFeedbackDto,
   CreateLearningPathDto, GetRecommendationsDto, GradeAssignmentDto, CheckPlagiarismDto,
   SemanticSearchDto, IndexContentDto, ForecastEnrollmentDto, DetectAnomalyDto, AnalyzeSentimentDto,
   ResolveInsightDto, PredictDropoutDto, PredictGradeDto, AnalyzeQuestionBankDto, AddQuestionDto
-} from './dto/ai.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+} from '../dto/ai.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags('ai')
 @Controller('ai')
@@ -82,9 +82,6 @@ export class AiController {
   @Roles('super_admin', 'admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get AI insights' })
-  async getInsights(@Req() req: any, @Query() query: GetInsightsDto) {
-    return this.aiService.getInsights(req.user.tenantId, query.type);
-  }
 
   @Post('insights/student/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)

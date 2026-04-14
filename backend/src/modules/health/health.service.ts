@@ -14,12 +14,12 @@ export class HealthService {
   @HealthCheck()
   async check(): Promise<HealthCheckResult> {
     return this.health.check([
-      async () => {
+      async (): Promise<any> => {
         try {
           await this.dataSource.query('SELECT 1');
-          return { status: 'up', database: 'connected' };
-        } catch (error) {
-          return { status: 'down', database: 'disconnected', error: error.message };
+          return { status: 'up', database: 'connected' } ;
+        } catch (error: any) {
+          return { status: 'down', database: 'disconnected', error: error.message } ;
         }
       },
     ]);

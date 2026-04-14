@@ -212,6 +212,9 @@ export class Tenant {
   @Column({ type: 'jsonb', default: {} })
   settings: Record<string, any>;
 
+  @Column({ type: 'jsonb', default: {} })
+  theme: Record<string, any>;
+
   @CreateDateColumn()
   createdAt: Date;
 

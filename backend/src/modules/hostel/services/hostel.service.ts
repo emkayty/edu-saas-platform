@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Hostel, HostelRoom, HostelBed, HostelAllocation, HostelMaintenance, HostelComplaint, RoomStatus, BedStatus } from './entities/hostel.entity';
+import { Hostel, HostelRoom, HostelBed, HostelAllocation, HostelMaintenance, HostelComplaint, RoomStatus, BedStatus } from '../entities/hostel.entity';
 import { 
   CreateHostelDto, UpdateHostelDto,
   CreateRoomDto, UpdateRoomDto,
   AllocateStudentDto,
   CreateMaintenanceDto, UpdateMaintenanceDto,
   CreateComplaintDto
-} from './dto/hostel.dto';
+} from '../dto/hostel.dto';
 
 @Injectable()
 export class HostelService {
@@ -98,7 +98,7 @@ export class HostelService {
       .createQueryBuilder('room')
       .where('room.status = :status', { status: RoomStatus.AVAILABLE })
       .andWhere('room.currentOccupancy < room.capacity')
-      .andWhere(room => room.hostelId.in(hostelIds))
+      .andWhere('room.hostelId IN (:...hostelIds)', { hostelIds })
       .orderBy('room.pricePerBed', 'ASC')
       .getMany();
   }

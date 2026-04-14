@@ -14,7 +14,7 @@ import {
   NIGERIAN_GRADING_SYSTEM,
   AMERICAN_GRADING_SYSTEM,
   BRITISH_GRADING_SYSTEM,
-} from './types/grading-system';
+} from '../types/grading-system';
 
 export interface CourseResult {
   courseId: string;

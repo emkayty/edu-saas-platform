@@ -40,9 +40,9 @@ export class UsersService {
     }
 
     // Map DTO to entity properties
-    const userData: any = { ...createUserDto };
+    const userData = createUserDto as unknown as Partial<User>;
     if (userData.role && typeof userData.role === 'string') {
-      userData.role = userData.role as any; // Cast to allow string
+      userData.role = userData.role as UserRole;
     }
     
     const user = this.userRepository.create(userData);

@@ -2,6 +2,14 @@ import { IsString, IsOptional, IsNumber, IsBoolean, IsArray, IsEnum, IsDateStrin
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
+// Forward declaration for circular reference
+export class AssessmentWeightsDto {
+  @ApiPropertyOptional() @IsOptional() @IsNumber() ca?: number;
+  @ApiPropertyOptional() @IsOptional() @IsNumber() exam?: number;
+  @ApiPropertyOptional() @IsOptional() @IsNumber() practical?: number;
+  @ApiPropertyOptional() @IsOptional() @IsNumber() project?: number;
+}
+
 // ============== FACULTY DTOs ==============
 
 export class CreateFacultyDto {
@@ -65,18 +73,11 @@ export class CreateCourseDto {
   @ApiProperty() @IsNumber() semester: number;
   @ApiPropertyOptional() @IsOptional() @IsUUID() departmentId?: string;
   @ApiPropertyOptional() @IsOptional() @IsArray() programs?: string[];
-  @ApiPropertyOptional() @IsOptional() @IsValidateNested() @Type(() => AssessmentWeightsDto) assessmentWeights?: AssessmentWeightsDto;
+  @ApiPropertyOptional() @IsOptional() @ValidateNested() @Type(() => AssessmentWeightsDto) assessmentWeights?: AssessmentWeightsDto;
   @ApiPropertyOptional() @IsOptional() @IsNumber() passMark?: number;
 }
 
 export class UpdateCourseDto extends PartialType(CreateCourseDto) {}
-
-export class AssessmentWeightsDto {
-  @ApiPropertyOptional() @IsOptional() @IsNumber() ca?: number;
-  @ApiPropertyOptional() @IsOptional() @IsNumber() exam?: number;
-  @ApiPropertyOptional() @IsOptional() @IsNumber() practical?: number;
-  @ApiPropertyOptional() @IsOptional() @IsNumber() project?: number;
-}
 
 // ============== ACADEMIC SESSION DTOs ==============
 
@@ -110,7 +111,7 @@ export class CourseAllocationDto {
 export class StudentCourseRegistrationDto {
   @ApiProperty() @IsUUID() sessionId: string;
   @ApiProperty() @IsNumber() semester: number;
-  @ApiProperty() @IsArray() @IsUUID({}, { each: true }) courseIds: string[];
+  @ApiProperty() @IsArray() @IsUUID('4', { each: true }) courseIds: string[];
 }
 
 // ============== GRADE ENTRY DTOs ==============

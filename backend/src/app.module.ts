@@ -21,31 +21,47 @@ import { AiModule } from './modules/ai/ai.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { TimetableModule } from './modules/timetable/timetable.module';
 
-// Integration Modules
-import { JambCapsModule } from '../integrations/jamb-caps/jamb-caps.module';
-import { RemitaPaymentModule } from '../integrations/remita/remita-payment.module';
-import { NucNbteReportingModule } from '../integrations/nuc-nbte/nuc-nbte-reporting.module';
+// Integration Modules (disabled for now - add when integrations are ready)
+// import { JambCapsModule } from '../integrations/jamb-caps/jamb-caps.module';
+// import { RemitaPaymentModule } from '../integrations/remita/remita-payment.module';
+// import { NucNbteReportingModule } from '../integrations/nuc-nbte/nuc-nbte-reporting.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5432),
-        username: configService.get('DB_USERNAME', 'postgres'),
-        password: configService.get('DB_PASSWORD', 'postgres'),
-        database: configService.get('DB_DATABASE', 'edusaas'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('NODE_ENV') !== 'production',
-        logging: configService.get('NODE_ENV') === 'development',
-        // Enable for better performance in production
-        extra: {
-          connectionLimit: 10,
-        },
-      }),
+      useFactory: (configService: ConfigService) => {
+        const dbType = configService.get('DB_TYPE', 'postgres');
+        
+        // SQLite configuration (for development/testing)
+        if (dbType === 'sqlite') {
+          return {
+            type: 'sqlite',
+            database: configService.get('SQLITE_DATABASE', './dev.sqlite'),
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: true,
+            logging: configService.get('NODE_ENV') === 'development',
+          };
+        }
+        
+        // PostgreSQL configuration (default)
+        return {
+          type: 'postgres',
+          host: configService.get('DB_HOST', 'localhost'),
+          port: configService.get<number>('DB_PORT', 5432),
+          username: configService.get('DB_USERNAME', 'postgres'),
+          password: configService.get('DB_PASSWORD', 'postgres'),
+          database: configService.get('DB_DATABASE', 'edusaas'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: configService.get('NODE_ENV') !== 'production',
+          logging: configService.get('NODE_ENV') === 'development',
+          // Enable for better performance in production
+          extra: {
+            connectionLimit: 10,
+          },
+        };
+      },
       inject: [ConfigService],
     }),
     ThrottlerModule.forRootAsync({
@@ -77,10 +93,10 @@ import { NucNbteReportingModule } from '../integrations/nuc-nbte/nuc-nbte-report
     AiModule, 
     AnalyticsModule, 
     TimetableModule,
-    // Integration Modules
-    JambCapsModule,
-    RemitaPaymentModule,
-    NucNbteReportingModule,
+    // Integration Modules (disabled for now)
+    // JambCapsModule,
+    // RemitaPaymentModule,
+    // NucNbteReportingModule,
   ],
 })
 export class AppModule {}

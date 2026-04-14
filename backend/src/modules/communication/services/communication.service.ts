@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Notification, EmailTemplate, SmsTemplate, Announcement, NotificationType, NotificationStatus } from './entities/communication.entity';
-import { SendNotificationDto, CreateEmailTemplateDto, CreateSmsTemplateDto, CreateAnnouncementDto } from './dto/communication.dto';
+import { Notification, EmailTemplate, SmsTemplate, Announcement, NotificationType, NotificationStatus } from '../entities/communication.entity';
+import { SendNotificationDto, CreateEmailTemplateDto, CreateSmsTemplateDto, CreateAnnouncementDto } from '../dto/communication.dto';
 
 @Injectable()
 export class CommunicationService {

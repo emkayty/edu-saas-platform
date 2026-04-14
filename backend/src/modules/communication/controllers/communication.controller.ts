@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Patch, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Req, Get, Post, Patch, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { CommunicationService } from './services/communication.service';
-import { SendNotificationDto, CreateEmailTemplateDto, CreateSmsTemplateDto, CreateAnnouncementDto } from './dto/communication.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { CommunicationService } from '../services/communication.service';
+import { SendNotificationDto, CreateEmailTemplateDto, CreateSmsTemplateDto, CreateAnnouncementDto } from '../dto/communication.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags('communication')
 @Controller('communication')

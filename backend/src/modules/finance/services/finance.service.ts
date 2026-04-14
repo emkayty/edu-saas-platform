@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FeeStructure, StudentFee, Payment, Invoice, Scholarship, StudentScholarship, FeeCategory, PaymentStatus } from './entities/finance.entity';
+import { FeeStructure, StudentFee, Payment, Invoice, Scholarship, StudentScholarship, FeeCategory, PaymentStatus } from '../entities/finance.entity';
 import { 
   CreateFeeStructureDto, UpdateFeeStructureDto,
   CreatePaymentDto, PaymentQueryDto,
   CreateScholarshipDto, UpdateScholarshipDto,
   ApplyScholarshipDto
-} from './dto/finance.dto';
+} from '../dto/finance.dto';
 
 @Injectable()
 export class FinanceService {
@@ -89,15 +89,20 @@ export class FinanceService {
   // ============== PAYMENTS ==============
 
   async createPayment(dto: CreatePaymentDto, tenantId?: string): Promise<Payment> {
-    const payment = this.paymentRepo.create({ ...dto, tenantId });
+    const paymentData = {
+      ...dto,
+      amount: Number(dto.amount),
+      tenantId
+    };
+    const payment = this.paymentRepo.create(paymentData as any);
     const saved = await this.paymentRepo.save(payment);
     
     // Update student fee if applicable
     if (dto.studentFeeId) {
-      await this.updateStudentFeePayment(dto.studentFeeId, dto.amount);
+      await this.updateStudentFeePayment(dto.studentFeeId, Number(dto.amount));
     }
     
-    return saved;
+    return saved[0];
   }
 
   private async updateStudentFeePayment(studentFeeId: string, amount: number): Promise<void> {
@@ -173,7 +178,7 @@ export class FinanceService {
     if (!scholarship) throw new NotFoundException('Scholarship not found');
     
     const amount = scholarship.type === 'percentage'
-      ? (dto.amount * (scholarship.percentage || 0) / 100)
+      ? (Number(dto.amount) * (scholarship.percentage || 0) / 100)
       : scholarship.amount;
     
     const studentScholarship = this.studentScholarshipRepo.create({

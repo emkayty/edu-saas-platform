@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Department, Faculty, Program } from './entities/department.entity';
-import { Course, AcademicSession, CourseAllocation, StudentCourse } from './entities/course.entity';
+import { Department, Faculty, Program } from '../entities/department.entity';
+import { Course, AcademicSession, CourseAllocation, StudentCourse } from '../entities/course.entity';
 import { 
   CreateDepartmentDto, UpdateDepartmentDto,
   CreateFacultyDto, UpdateFacultyDto,
@@ -10,7 +10,7 @@ import {
   CreateCourseDto, UpdateCourseDto,
   CreateAcademicSessionDto, UpdateAcademicSessionDto,
   CourseAllocationDto, StudentCourseRegistrationDto
-} from './dto/academic.dto';
+} from '../dto/academic.dto';
 
 @Injectable()
 export class AcademicsService {

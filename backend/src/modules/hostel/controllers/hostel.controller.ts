@@ -1,14 +1,14 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { HostelService } from './services/hostel.service';
-import { CreateHostelDto, UpdateHostelDto, CreateRoomDto, AllocateStudentDto, CreateMaintenanceDto, UpdateMaintenanceDto, CreateComplaintDto, HostelQueryDto } from './dto/hostel.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { HostelService } from '../services/hostel.service';
+import { CreateHostelDto, UpdateHostelDto, CreateRoomDto, AllocateStudentDto, CreateMaintenanceDto, UpdateMaintenanceDto, CreateComplaintDto, HostelQueryDto } from '../dto/hostel.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags('hostel')
 @Controller('hostel')
-export class LibraryController {
+export class HostelController {
   constructor(private readonly hostelService: HostelService) {}
 
   // Hostels
@@ -54,7 +54,7 @@ export class LibraryController {
 
   @Get('rooms')
   @ApiOperation({ summary: 'Get rooms' })
-  async getRooms(@Query('hostelId') hostelId?: string, @Req() req: any?) {
+  async getRooms(@Req() req: any, @Query('hostelId') hostelId?: string) {
     return this.hostelService.getRooms(hostelId, req?.user?.tenantId);
   }
 
@@ -114,7 +114,7 @@ export class LibraryController {
   @Roles('super_admin', 'admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get maintenance requests' })
-  async getMaintenance(@Query('roomId') roomId?: string, @Req() req: any) {
+  async getMaintenance(@Req() req: any, @Query('roomId') roomId?: string) {
     return this.hostelService.getMaintenanceRequests(roomId, req.user.tenantId);
   }
 

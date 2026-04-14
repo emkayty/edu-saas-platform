@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Req, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { HrService } from './services/hr.service';
-import { CreateStaffProfileDto, UpdateStaffProfileDto, CreateLeaveApplicationDto, ProcessPayrollDto, HrQueryDto } from './dto/hr.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { HrService } from '../services/hr.service';
+import { CreateStaffProfileDto, UpdateStaffProfileDto, CreateLeaveApplicationDto, ProcessPayrollDto, HrQueryDto } from '../dto/hr.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags('hr')
 @Controller('hr')

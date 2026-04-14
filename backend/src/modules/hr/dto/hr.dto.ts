@@ -31,6 +31,11 @@ export class CreateLeaveApplicationDto {
   @ApiPropertyOptional() @IsOptional() @IsUUID() substituteStaffId?: string;
 }
 
+export class UpdateLeaveApplicationDto {
+  @ApiPropertyOptional() @IsOptional() @IsEnum(LeaveType) status?: LeaveType;
+  @ApiPropertyOptional() @IsOptional() @IsString() reason?: string;
+}
+
 export class ProcessPayrollDto {
   @ApiProperty() @IsNumber() month: number;
   @ApiProperty() @IsNumber() year: number;

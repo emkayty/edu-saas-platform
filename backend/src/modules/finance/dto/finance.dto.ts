@@ -21,7 +21,7 @@ export class CreateFeeStructureDto {
   @ApiPropertyOptional() @IsOptional() @IsBoolean() hasLatePenalty?: boolean;
   @ApiPropertyOptional() @IsOptional() @IsNumber() latePenaltyPercentage?: number;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() allowsInstallment?: boolean;
-  @ApiPropertyOptional() @IsOptional() @IsValidateNested() @Type(() => InstallmentPlanDto) installmentPlan?: any;
+  @ApiPropertyOptional() @IsOptional() @ValidateNested() @Type(() => InstallmentPlanDto) installmentPlan?: any;
   @ApiPropertyOptional() @IsOptional() @IsUUID() departmentId?: string;
   @ApiPropertyOptional() @IsOptional() @IsUUID() programId?: string;
 }

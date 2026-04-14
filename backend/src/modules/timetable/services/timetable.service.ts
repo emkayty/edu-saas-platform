@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TimetableSession, TimetableCourse, TimetableSlot, TimetableVenue, TimetableConflict, TimeSlotStatus } from './entities/timetable.entity';
+import { TimetableSession, TimetableCourse, TimetableSlot, TimetableVenue, TimetableConflict, TimeSlotStatus } from '../entities/timetable.entity';
 
 @Injectable()
 export class TimetableService {

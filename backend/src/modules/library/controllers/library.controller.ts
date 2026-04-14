@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { LibraryService } from '../services/library.service';
 import { CreateBookDto, UpdateBookDto, SearchBookQueryDto, CreateBorrowingDto, CreateReservationDto, UpdateHoursDto, BorrowingQueryDto } from '../dto/library.dto';

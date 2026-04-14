@@ -43,6 +43,25 @@ export class SettingsService {
   }
 
   /**
+   * Update theme for a tenant
+   */
+  async updateTheme(tenantId: string, theme: Record<string, any>): Promise<Record<string, any>> {
+    const tenant = await this.tenantRepository.findOne({ where: { id: tenantId } });
+    
+    if (!tenant) {
+      throw new NotFoundException('Tenant not found');
+    }
+
+    tenant.theme = {
+      ...tenant.theme,
+      ...theme,
+    };
+
+    await this.tenantRepository.save(tenant);
+    return tenant.theme;
+  }
+
+  /**
    * Get module configuration for a tenant
    */
   async getModuleConfig(tenantId: string): Promise<Record<string, any>> {

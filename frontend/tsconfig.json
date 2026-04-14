@@ -1,4 +1,3 @@
-# EduSaaS Frontend Configuration
 {
   "compilerOptions": {
     "target": "ES2017",

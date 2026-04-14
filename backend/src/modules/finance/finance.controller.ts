@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Req, Get, Post, Patch, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { FinanceService } from './services/finance.service';
 import { CreateFeeStructureDto, UpdateFeeStructureDto, CreatePaymentDto, CreateScholarshipDto, UpdateScholarshipDto, ApplyScholarshipDto, PaymentQueryDto, GenerateInvoiceDto } from './dto/finance.dto';

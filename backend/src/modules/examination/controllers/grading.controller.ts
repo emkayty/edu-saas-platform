@@ -3,13 +3,13 @@
  * Allows institutions to configure their grading system
  */
 
-import { Controller, Get, Post, Put, Body, Param, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Req, Get, Post, Put, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { GradingService, StudentGradeSummary } from '../services/grading.service';
 import { GradingSystem, GradingConfiguration, GradeDefinition, HonoursClassification, NIGERIAN_GRADING_SYSTEM, AMERICAN_GRADING_SYSTEM, BRITISH_GRADING_SYSTEM } from '../types/grading-system';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 @ApiTags('grading')
 @Controller('grading')
