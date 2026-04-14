@@ -1,432 +1,593 @@
 /**
- * Student Dashboard Screen
+ * Ultra-Modern Mobile Dashboard
+ * Clean, user-centric, empathetic design
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  StatusBar,
   RefreshControl,
-  Image,
 } from 'react-native';
-import { useAuthStore, useStudentStore, useNotificationStore } from '../store';
-import api from '../services/api';
+
+const { width } = Dimensions.get('window');
 
 const DashboardScreen = ({ navigation }: any) => {
-  const { user } = useAuthStore();
-  const { profile, timetable, setProfile, setTimetable } = useStudentStore();
-  const { unreadCount } = useNotificationStore();
   const [refreshing, setRefreshing] = useState(false);
-  const [greeting, setGreeting] = useState('');
 
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) setGreeting('Good morning');
-    else if (hour < 17) setGreeting('Good afternoon');
-    else setGreeting('Good evening');
-
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const [profileRes, timetableRes] = await Promise.all([
-        api.getStudentProfile(),
-        api.getTimetable(),
-      ]);
-      setProfile(profileRes.data);
-      setTimetable(timetableRes.data);
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-    }
+  const student = {
+    name: 'Ahmed Musa',
+    level: '200 Level',
+    department: 'Computer Science',
+    gpa: '3.85',
+    cgpa: '3.72',
+    image: null,
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadData();
-    setRefreshing(false);
-  };
-
-  const menuItems = [
-    {
-      icon: '📚',
-      label: 'My Courses',
-      color: '#0066CC',
-      onPress: () => navigation.navigate('Courses'),
-    },
-    {
-      icon: '📝',
-      label: 'Results',
-      color: '#27ae60',
-      onPress: () => navigation.navigate('Results'),
-    },
-    {
-      icon: '💰',
-      label: 'Fees',
-      color: '#e67e22',
-      onPress: () => navigation.navigate('Fees'),
-    },
-    {
-      icon: '📅',
-      label: 'Timetable',
-      color: '#9b59b6',
-      onPress: () => navigation.navigate('Timetable'),
-    },
-    {
-      icon: '📖',
-      label: 'Library',
-      color: '#e74c3c',
-      onPress: () => navigation.navigate('Library'),
-    },
-    {
-      icon: '🏠',
-      label: 'Hostel',
-      color: '#1abc9c',
-      onPress: () => navigation.navigate('Hostel'),
-    },
+  const quickActions = [
+    { icon: '📚', label: 'Courses', color: '#3B82F6', count: 6 },
+    { icon: '📝', label: 'Results', color: '#10B981', count: 5 },
+    { icon: '💳', label: 'Fees', color: '#F59E0B', badge: 'Due' },
+    { icon: '📅', label: 'Time', color: '#8B5CF6', count: 4 },
+    { icon: '📖', label: 'Library', color: '#EF4444', count: 2 },
+    { icon: '🏠', label: 'Hostel', color: '#14B8A6', status: 'Applied' },
   ];
 
+  const todayClasses = [
+    { time: '08:00', course: 'CSC201', title: 'Data Structures', venue: 'Lab 3' },
+    { time: '10:00', course: 'CSC203', title: 'Database Systems', venue: 'Room 12' },
+    { time: '14:00', course: 'MTH202', title: 'Linear Algebra', venue: 'Room 8' },
+  ];
+
+  const announcements = [
+    { id: 1, title: 'Mid-Semester Exam Schedule', date: 'Today', type: 'exam' },
+    { id: 2, title: 'Fee Payment Deadline Extended', date: 'Yesterday', type: 'finance' },
+    { id: 3, title: 'Library Holiday Hours', date: '2 days ago', type: 'general' },
+  ];
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1500);
+  };
+
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#4F46E5" />
+      
       {/* Header */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>{greeting},</Text>
-          <Text style={styles.userName}>
-            {user?.firstName} {user?.lastName}
-          </Text>
-          <Text style={styles.matricNumber}>{profile?.matricNumber || 'Loading...'}</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.profileButton}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          {user?.avatar ? (
-            <Image source={{ uri: user.avatar }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarText}>
-                {user?.firstName?.[0]}
-                {user?.lastName?.[0]}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {/* Quick Stats */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>{profile?.currentLevel || '--'}</Text>
-          <Text style={styles.statLabel}>Level</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>{profile?.gpa || '--'}</Text>
-          <Text style={styles.statLabel}>GPA</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>{profile?.cgpa || '--'}</Text>
-          <Text style={styles.statLabel}>CGPA</Text>
-        </View>
-      </View>
-
-      {/* Today's Timetable */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Today's Classes</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Timetable')}>
-            <Text style={styles.seeAll}>See All</Text>
+        <View style={styles.headerContent}>
+          <View>
+            <Text style={styles.greeting}>Good morning 👋</Text>
+            <Text style={styles.studentName}>{student.name}</Text>
+            <Text style={styles.studentInfo}>{student.level} • {student.department}</Text>
+          </View>
+          <TouchableOpacity style={styles.profileButton}>
+            <Text style={styles.profileInitials}>
+              {student.name.split(' ').map(n => n[0]).join('')}
+            </Text>
           </TouchableOpacity>
         </View>
-        {timetable?.length > 0 ? (
-          timetable.slice(0, 3).map((session: any, index: number) => (
-            <View key={index} style={styles.timetableCard}>
-              <View style={styles.timetableTime}>
-                <Text style={styles.timeText}>{session.time}</Text>
-              </View>
-              <View style={styles.timetableContent}>
-                <Text style={styles.courseCode}>{session.courseCode}</Text>
-                <Text style={styles.courseTitle}>{session.courseTitle}</Text>
-                <Text style={styles.venue}>{session.venue}</Text>
-              </View>
-            </View>
-          ))
-        ) : (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No classes scheduled for today</Text>
-          </View>
-        )}
       </View>
 
-      {/* Quick Actions */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.menuGrid}>
-          {menuItems.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.menuItem}
-              onPress={item.onPress}
-            >
-              <View style={[styles.menuIcon, { backgroundColor: item.color + '20' }]}>
-                <Text style={styles.menuIconText}>{item.icon}</Text>
-              </View>
-              <Text style={styles.menuLabel}>{item.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      {/* AI Assistant */}
-      <TouchableOpacity
-        style={styles.aiAssistant}
-        onPress={() => navigation.navigate('AIAssistant')}
+      <ScrollView 
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh}
+            colors={['#4F46E5']}
+          />
+        }
       >
-        <View style={styles.aiIcon}>
-          <Text>🤖</Text>
+        {/* GPA Card */}
+        <View style={styles.gpaCard}>
+          <View style={styles.gpaHeader}>
+            <Text style={styles.gpaTitle}>Academic Performance</Text>
+            <View style={styles.excellentBadge}>
+              <Text style={styles.excellentText}>Excellent</Text>
+            </View>
+          </View>
+          <View style={styles.gpaStats}>
+            <View style={styles.gpaItem}>
+              <Text style={styles.gpaValue}>{student.gpa}</Text>
+              <Text style={styles.gpaLabel}>Current GPA</Text>
+            </View>
+            <View style={styles.gpaDivider} />
+            <View style={styles.gpaItem}>
+              <Text style={styles.gpaValueCum}>{student.cgpa}</Text>
+              <Text style={styles.gpaLabel}>Cumulative</Text>
+            </View>
+          </View>
+          <View style={styles.progressSection}>
+            <View style={styles.progressHeader}>
+              <Text style={styles.progressLabel}>Progress to First Class</Text>
+              <Text style={styles.progressPercent}>72%</Text>
+            </View>
+            <View style={styles.progressBar}>
+              <View style={styles.progressFill} />
+            </View>
+          </View>
         </View>
-        <View style={styles.aiContent}>
-          <Text style={styles.aiTitle}>AI Academic Advisor</Text>
-          <Text style={styles.aiSubtitle}>
-            Get personalized study recommendations
-          </Text>
-        </View>
-        <Text style={styles.aiArrow}>›</Text>
-      </TouchableOpacity>
 
-      <View style={styles.bottomPadding} />
-    </ScrollView>
+        {/* Quick Actions */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.actionsGrid}>
+            {quickActions.map((action, index) => (
+              <TouchableOpacity 
+                key={index} 
+                style={styles.actionCard}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.actionIcon, { backgroundColor: action.color + '20' }]}>
+                  <Text style={styles.actionEmoji}>{action.icon}</Text>
+                </View>
+                <Text style={styles.actionLabel}>{action.label}</Text>
+                {action.count && (
+                  <Text style={styles.actionCount}>{action.count}</Text>
+                )}
+                {action.badge && (
+                  <View style={[styles.actionBadge, { backgroundColor: action.color }]}>
+                    <Text style={styles.actionBadgeText}>{action.badge}</Text>
+                  </View>
+                )}
+                {action.status && (
+                  <Text style={styles.actionStatus}>{action.status}</Text>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Today's Classes */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Today's Classes</Text>
+            <TouchableOpacity>
+              <Text style={styles.seeAll}>View All →</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.classesList}>
+            {todayClasses.map((cls, index) => (
+              <TouchableOpacity 
+                key={index} 
+                style={styles.classCard}
+                activeOpacity={0.8}
+              >
+                <View style={styles.classTimeBox}>
+                  <Text style={styles.classTime}>{cls.time}</Text>
+                </View>
+                <View style={styles.classInfo}>
+                  <Text style={styles.classCode}>{cls.course}</Text>
+                  <Text style={styles.classTitle}>{cls.title}</Text>
+                  <Text style={styles.classVenue}>📍 {cls.venue}</Text>
+                </View>
+                <View style={styles.classArrow}>
+                  <Text style={styles.arrowIcon}>›</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Announcements */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Announcements</Text>
+            <TouchableOpacity>
+              <Text style={styles.seeAll}>View All →</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.announcementsList}>
+            {announcements.map((item) => (
+              <TouchableOpacity 
+                key={item.id} 
+                style={styles.announcementCard}
+                activeOpacity={0.8}
+              >
+                <View style={[
+                  styles.announcementIcon,
+                  item.type === 'exam' && styles.examIcon,
+                  item.type === 'finance' && styles.financeIcon,
+                  item.type === 'general' && styles.generalIcon,
+                ]}>
+                  <Text style={styles.announcementEmoji}>
+                    {item.type === 'exam' ? '📝' : item.type === 'finance' ? '💳' : '📢'}
+                  </Text>
+                </View>
+                <View style={styles.announcementContent}>
+                  <Text style={styles.announcementTitle}>{item.title}</Text>
+                  <Text style={styles.announcementDate}>{item.date}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* AI Recommendation */}
+        <TouchableOpacity style={styles.aiCard} activeOpacity={0.9}>
+          <View style={styles.aiContent}>
+            <View style={styles.aiIconBox}>
+              <Text style={styles.aiIcon}>🤖</Text>
+            </View>
+            <View style={styles.aiTextBox}>
+              <Text style={styles.aiTitle}>AI Academic Advisor</Text>
+              <Text style={styles.aiSubtitle}>
+                Review "Data Structures" topics before your test on Friday
+              </Text>
+            </View>
+          </View>
+          <Text style={styles.aiArrow}>›</Text>
+        </TouchableOpacity>
+
+        <View style={styles.bottomPadding} />
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F8FAFC',
   },
   header: {
+    backgroundColor: '#4F46E5',
+    paddingTop: 50,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+  },
+  headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#0066CC',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
   },
   greeting: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.8)',
   },
-  userName: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#fff',
+  studentName: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginTop: 4,
   },
-  matricNumber: {
-    fontSize: 14,
+  studentInfo: {
+    fontSize: 13,
     color: 'rgba(255,255,255,0.7)',
-    marginTop: 2,
+    marginTop: 4,
   },
   profileButton: {
-    marginLeft: 10,
-  },
-  avatar: {
     width: 50,
     height: 50,
-    borderRadius: 25,
-  },
-  avatarPlaceholder: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    borderRadius: 16,
     backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  avatarText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  profileInitials: {
     fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    marginTop: -10,
-  },
-  statCard: {
+  content: {
     flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    padding: 15,
-    marginHorizontal: 5,
-    alignItems: 'center',
+    paddingTop: 20,
+    paddingHorizontal: 20,
+  },
+  gpaCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
     elevation: 3,
+    marginBottom: 24,
   },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0066CC',
+  gpaHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  statLabel: {
+  gpaTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1E293B',
+  },
+  excellentBadge: {
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  excellentText: {
     fontSize: 12,
-    color: '#666',
-    marginTop: 5,
+    fontWeight: '600',
+    color: '#059669',
+  },
+  gpaStats: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  gpaItem: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+  },
+  gpaValue: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#4F46E5',
+  },
+  gpaValueCum: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#3B82F6',
+  },
+  gpaLabel: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 4,
+  },
+  gpaDivider: {
+    width: 1,
+    backgroundColor: '#E2E8F0',
+    marginHorizontal: 12,
+  },
+  progressSection: {},
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  progressLabel: {
+    fontSize: 13,
+    color: '#64748B',
+  },
+  progressPercent: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#4F46E5',
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: '#E2E8F0',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    width: '72%',
+    height: '100%',
+    backgroundColor: '#4F46E5',
+    borderRadius: 4,
   },
   section: {
-    padding: 20,
+    marginBottom: 24,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#1E293B',
+    marginBottom: 12,
   },
   seeAll: {
-    color: '#0066CC',
     fontSize: 14,
-  },
-  timetableCard: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  timetableTime: {
-    backgroundColor: '#0066CC',
-    borderRadius: 8,
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  timeText: {
-    color: '#fff',
     fontWeight: '600',
-    fontSize: 12,
+    color: '#4F46E5',
   },
-  timetableContent: {
-    flex: 1,
-  },
-  courseCode: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  courseTitle: {
-    fontSize: 13,
-    color: '#666',
-    marginTop: 2,
-  },
-  venue: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 5,
-  },
-  emptyState: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 30,
-    alignItems: 'center',
-  },
-  emptyText: {
-    color: '#999',
-    fontSize: 14,
-  },
-  menuGrid: {
+  actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    gap: 12,
   },
-  menuItem: {
-    width: '31%',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 15,
+  actionCard: {
+    width: (width - 52) / 3,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
     alignItems: 'center',
-    marginBottom: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
     shadowRadius: 4,
     elevation: 2,
   },
-  menuIcon: {
-    width: 45,
-    height: 45,
-    borderRadius: 12,
+  actionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
   },
-  menuIconText: {
-    fontSize: 22,
+  actionEmoji: {
+    fontSize: 24,
   },
-  menuLabel: {
+  actionLabel: {
     fontSize: 12,
-    color: '#333',
-    textAlign: 'center',
+    fontWeight: '600',
+    color: '#374151',
   },
-  aiAssistant: {
+  actionCount: {
+    fontSize: 10,
+    color: '#94A3B8',
+    marginTop: 2,
+  },
+  actionBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    marginTop: 4,
+  },
+  actionBadgeText: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  actionStatus: {
+    fontSize: 10,
+    color: '#10B981',
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  classesList: {
+    gap: 10,
+  },
+  classCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0066CC',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  classTimeBox: {
+    backgroundColor: '#4F46E5',
     borderRadius: 12,
-    padding: 15,
-    marginHorizontal: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginRight: 14,
+  },
+  classTime: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  classInfo: {
+    flex: 1,
+  },
+  classCode: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  classTitle: {
+    fontSize: 13,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  classVenue: {
+    fontSize: 12,
+    color: '#94A3B8',
+    marginTop: 4,
+  },
+  classArrow: {
+    padding: 8,
+  },
+  arrowIcon: {
+    fontSize: 20,
+    color: '#CBD5E1',
+  },
+  announcementsList: {
+    gap: 10,
+  },
+  announcementCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  announcementIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  examIcon: { backgroundColor: '#FEE2E2' },
+  financeIcon: { backgroundColor: '#FEF3C7' },
+  generalIcon: { backgroundColor: '#DBEAFE' },
+  announcementEmoji: {
+    fontSize: 20,
+  },
+  announcementContent: {
+    flex: 1,
+  },
+  announcementTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1E293B',
+  },
+  announcementDate: {
+    fontSize: 12,
+    color: '#94A3B8',
+    marginTop: 4,
+  },
+  aiCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4F46E5',
+    borderRadius: 20,
+    padding: 20,
     marginBottom: 20,
   },
-  aiIcon: {
-    width: 45,
-    height: 45,
-    borderRadius: 12,
+  aiContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  aiIconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
     backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 14,
   },
-  aiContent: {
-    flex: 1,
-    marginLeft: 15,
-  },
-  aiTitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  aiSubtitle: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 12,
-    marginTop: 2,
-  },
-  aiArrow: {
-    color: '#fff',
+  aiIcon: {
     fontSize: 24,
   },
+  aiTextBox: {
+    flex: 1,
+  },
+  aiTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  aiSubtitle: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 4,
+  },
+  aiArrow: {
+    fontSize: 24,
+    color: '#FFFFFF',
+  },
   bottomPadding: {
-    height: 20,
+    height: 100,
   },
 });
 
