@@ -21,6 +21,11 @@ import { AiModule } from './modules/ai/ai.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { TimetableModule } from './modules/timetable/timetable.module';
 
+// Integration Modules
+import { JambCapsModule } from '../integrations/jamb-caps/jamb-caps.module';
+import { RemitaPaymentModule } from '../integrations/remita/remita-payment.module';
+import { NucNbteReportingModule } from '../integrations/nuc-nbte/nuc-nbte-reporting.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
@@ -36,20 +41,46 @@ import { TimetableModule } from './modules/timetable/timetable.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: configService.get('NODE_ENV') !== 'production',
         logging: configService.get('NODE_ENV') === 'development',
+        // Enable for better performance in production
+        extra: {
+          connectionLimit: 10,
+        },
       }),
       inject: [ConfigService],
     }),
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        throttlers: [{ ttl: configService.get<number>('THROTTLE_TTL', 60000), limit: configService.get<number>('THROTTLE_LIMIT', 100) }],
+        throttlers: [{ 
+          ttl: configService.get<number>('THROTTLE_TTL', 60000), 
+          limit: configService.get<number>('THROTTLE_LIMIT', 100) 
+        }],
       }),
       inject: [ConfigService],
     }),
-    AuthModule, UsersModule, TenantsModule, SettingsModule, HealthModule,
-    AcademicsModule, FinanceModule, LmsModule, ExaminationModule,
-    LibraryModule, HostelModule, HrModule, CommunicationModule,
-    DocumentsModule, AdminModule, AiModule, AnalyticsModule, TimetableModule,
+    // Core Modules
+    AuthModule, 
+    UsersModule, 
+    TenantsModule, 
+    SettingsModule, 
+    HealthModule,
+    AcademicsModule, 
+    FinanceModule, 
+    LmsModule, 
+    ExaminationModule,
+    LibraryModule, 
+    HostelModule, 
+    HrModule, 
+    CommunicationModule,
+    DocumentsModule, 
+    AdminModule, 
+    AiModule, 
+    AnalyticsModule, 
+    TimetableModule,
+    // Integration Modules
+    JambCapsModule,
+    RemitaPaymentModule,
+    NucNbteReportingModule,
   ],
 })
 export class AppModule {}
