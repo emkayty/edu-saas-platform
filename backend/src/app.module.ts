@@ -1,0 +1,55 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { TenantsModule } from './modules/tenants/tenants.module';
+import { SettingsModule } from './modules/settings/settings.module';
+import { HealthModule } from './modules/health/health.module';
+import { AcademicsModule } from './modules/academics/academics.module';
+import { FinanceModule } from './modules/finance/finance.module';
+import { LmsModule } from './modules/lms/lms.module';
+import { ExaminationModule } from './modules/examination/examination.module';
+import { LibraryModule } from './modules/library/library.module';
+import { HostelModule } from './modules/hostel/hostel.module';
+import { HrModule } from './modules/hr/hr.module';
+import { CommunicationModule } from './modules/communication/communication.module';
+import { DocumentsModule } from './modules/documents/documents.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { AiModule } from './modules/ai/ai.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { TimetableModule } from './modules/timetable/timetable.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST', 'localhost'),
+        port: configService.get<number>('DB_PORT', 5432),
+        username: configService.get('DB_USERNAME', 'postgres'),
+        password: configService.get('DB_PASSWORD', 'postgres'),
+        database: configService.get('DB_DATABASE', 'edusaas'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: configService.get('NODE_ENV') !== 'production',
+        logging: configService.get('NODE_ENV') === 'development',
+      }),
+      inject: [ConfigService],
+    }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        throttlers: [{ ttl: configService.get<number>('THROTTLE_TTL', 60000), limit: configService.get<number>('THROTTLE_LIMIT', 100) }],
+      }),
+      inject: [ConfigService],
+    }),
+    AuthModule, UsersModule, TenantsModule, SettingsModule, HealthModule,
+    AcademicsModule, FinanceModule, LmsModule, ExaminationModule,
+    LibraryModule, HostelModule, HrModule, CommunicationModule,
+    DocumentsModule, AdminModule, AiModule, AnalyticsModule, TimetableModule,
+  ],
+})
+export class AppModule {}

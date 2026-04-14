@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": false,
+    "tsConfigPath": "tsconfig.json"
+  },
+  "generateOptions": {
+    "spec": false
+  },
+  "monorepo": false,
+  "root": "src",
+  "architect": {
+    "build": {
+      "builder": "@nestjs/cli:build",
+      "options": {
+        "outputPath": "dist",
+        "entryFile": "main",
+        "tsConfig": "tsconfig.json"
+      }
+    },
+    "start": {
+      "builder": "@nestjs/cli:start",
+      "options": {
+        "entryFile": "main",
+        "tsConfig": "tsconfig.json"
+      }
+    },
+    "start:dev": {
+      "builder": "@nestjs/cli:start",
+      "options": {
+        "entryFile": "main",
+        "tsConfig": "tsconfig.json",
+        "watch": true
+      }
+    },
+    "start:debug": {
+      "builder": "@nestjs/cli:start",
+      "options": {
+        "entryFile": "main",
+        "tsConfig": "tsconfig.json",
+        "debug": true,
+        "watch": true
+      }
+    }
+  }
+}
