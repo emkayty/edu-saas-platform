@@ -32,10 +32,13 @@ import { TimetableModule } from './modules/timetable/timetable.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        const dbType = configService.get('DB_TYPE', 'postgres');
+        // Debug: log the DB_TYPE to see what's being read
+        const dbType = (configService.get('DB_TYPE') || configService.get('DB_DRIVER') || 'postgres').toLowerCase();
+        
+        console.log('[DB Config] DB_TYPE:', dbType);
         
         // SQLite configuration (for development/testing)
-        if (dbType === 'sqlite') {
+        if (dbType === 'sqlite' || dbType === 'better-sqlite3') {
           return {
             type: 'sqlite',
             database: configService.get('SQLITE_DATABASE', './dev.sqlite'),
