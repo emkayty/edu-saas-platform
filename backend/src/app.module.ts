@@ -59,6 +59,11 @@ import { TimetableModule } from './modules/timetable/timetable.module';
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: configService.get('NODE_ENV') !== 'production',
           logging: configService.get('NODE_ENV') === 'development',
+          ssl: configService.get('DB_SSL', 'false') === 'true' ? { rejectUnauthorized: false } : false,
+          extra: {
+            connectionLimit: 10,
+            pool_timeout: 10,
+          },
         };
         
         console.log('[DB Config] Connecting to:', {
@@ -66,6 +71,7 @@ import { TimetableModule } from './modules/timetable/timetable.module';
           port: pgConfig.port,
           user: pgConfig.username,
           database: pgConfig.database,
+          ssl: !!pgConfig.ssl,
         });
         
         return pgConfig;
