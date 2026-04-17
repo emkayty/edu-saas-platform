@@ -40,7 +40,7 @@ import { TimetableModule } from './modules/timetable/timetable.module';
         // SQLite configuration (for development/testing)
         if (dbType === 'sqlite' || dbType === 'better-sqlite3') {
           return {
-            type: 'sqlite',
+            type: 'sqlite' as const,
             database: configService.get('SQLITE_DATABASE', './dev.sqlite'),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: true,
@@ -49,8 +49,9 @@ import { TimetableModule } from './modules/timetable/timetable.module';
         }
         
         // PostgreSQL configuration (default)
-        const pgConfig = {
-          type: 'postgres',
+        const useSSL = configService.get('DB_SSL', 'false').toLowerCase() === 'true';
+        const pgConfig: any = {
+          type: 'postgres' as const,
           host: configService.get('DB_HOST', 'localhost'),
           port: configService.get<number>('DB_PORT', 5432),
           username: configService.get('DB_USERNAME', 'postgres'),
@@ -59,10 +60,9 @@ import { TimetableModule } from './modules/timetable/timetable.module';
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: configService.get('NODE_ENV') !== 'production',
           logging: configService.get('NODE_ENV') === 'development',
-          ssl: configService.get('DB_SSL', 'false') === 'true' ? { rejectUnauthorized: false } : false,
+          ssl: useSSL ? { rejectUnauthorized: false } : false,
           extra: {
             connectionLimit: 10,
-            pool_timeout: 10,
           },
         };
         
