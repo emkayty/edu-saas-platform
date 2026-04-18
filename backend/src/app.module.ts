@@ -37,10 +37,10 @@ import { TimetableModule } from './modules/timetable/timetable.module';
         
         console.log('[DB Config] DB_TYPE:', dbType);
         
-        // SQLite configuration (for development/testing)
+        // SQLite configuration (for development/testing) - use better-sqlite3
         if (dbType === 'sqlite' || dbType === 'better-sqlite3') {
           return {
-            type: 'sqlite' as const,
+            type: 'better-sqlite3' as const,
             database: configService.get('SQLITE_DATABASE', './dev.sqlite'),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: true,
