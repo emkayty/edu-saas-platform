@@ -1,0 +1,29 @@
+{
+  "extends": "./base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+    "incremental": true,
+    "paths": {
+      "@university/ui": ["../../packages/ui/src"],
+      "@university/api-client": ["../../packages/api-client/src"],
+      "@university/api-client/*": ["../../packages/api-client/src/*"]
+    }
+  },
+  "include": ["../../apps/**/*", "../../packages/**/*"],
+  "exclude": ["node_modules", "dist", "build", ".next"]
+}
